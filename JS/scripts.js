@@ -33,19 +33,29 @@ function player () {
 var Player = new player();
 
 function blocks () {
-    this.id = 0;
+    this.id = 1;
+    this.position = [
+        [50],
+        [200],
+        [1]
+    ]
     this.newBlock = function() {
         var newdiv = document.createElement('div');
         newdiv.setAttribute('id',Blocks.id);
         newdiv.setAttribute('class', 'block');
         document.getElementById('game').appendChild(newdiv);
-        var size = getRandomInt(100,350);
+        var size = getRandomInt(screen.width/22,screen.width/7);
         document.getElementById(Blocks.id).style.width = String(size)+"px";
         var position = getRandomInt(25, screen.width-size);
+        Blocks.position[0].push(0);
+        Blocks.position[1].push(0);
+        Blocks.position[2].push(getRandomInt(1,5));
         Blocks.updatePosition(Blocks.id, position, dropHeight);
         this.id = this.id+1;
     };
     this.updatePosition = function(id, x, y) {
+        Blocks.position[0][id] = x;
+        Blocks.position[1][id] = y;
         document.getElementById(id).style.left = String(x)+"px";
         document.getElementById(id).style.top = String(y)+"px";
     };
