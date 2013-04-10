@@ -2,6 +2,8 @@ var mouseX = 0;
 var mouseY = 0;
 var dropHeight = 200;
 var platform = "PC";
+var blockTimer = new Timer(1, "Blocks.move();");
+var newBlockTimer = new Timer(250, "Blocks.newBlock();");
 
 function view () {
     this.currentView = "launcher";
@@ -15,6 +17,31 @@ function view () {
 }
 
 var View = new view();
+
+function game () {
+    this.start = function(view) {
+        View.pushView('game');
+        blockTimer.fire();
+        newBlockTimer.fire();
+    };
+}
+
+var Game = new game();
+
+//Timer Code
+function Timer (interval, command) {
+    this.interval = interval;
+    
+    this.fire = function() {
+        //Function to call
+        setTimeout(command,this.interval);
+        //console.log("Timer Fired!");
+    };
+    this.rearm = function() {
+        //Function to call
+        this.fire();
+    };
+}
 
 function player () {
     this.x = 0;
@@ -36,8 +63,7 @@ function blocks () {
     this.id = 1;
     this.position = [
         [50],
-        [200],
-        [1]
+        [200]
     ]
     this.newBlock = function() {
         var newdiv = document.createElement('div');
@@ -49,15 +75,21 @@ function blocks () {
         var position = getRandomInt(25, screen.width-size);
         Blocks.position[0].push(0);
         Blocks.position[1].push(0);
-        Blocks.position[2].push(getRandomInt(1,5));
         Blocks.updatePosition(Blocks.id, position, dropHeight);
         this.id = this.id+1;
+        newBlockTimer.rearm();
     };
     this.updatePosition = function(id, x, y) {
         Blocks.position[0][id] = x;
         Blocks.position[1][id] = y;
         document.getElementById(id).style.left = String(x)+"px";
         document.getElementById(id).style.top = String(y)+"px";
+    };
+    this.move = function() {
+        for (var i=0; i<Blocks.position[0].length; i++) {
+            Blocks.updatePosition(i, parseInt(Blocks.position[0][i]), parseInt(Blocks.position[1][i])+1);
+        }
+        blockTimer.rearm();
     };
 }
 
